@@ -3,7 +3,7 @@ from tkinter import ttk
 import mysql.connector
 
 def connect_DB():
-    server = 'daniels-MacBook-Pro.local' # Husk å endre til riktig servernavn (kan kjøre select * from ansatt Limit 10; for å finne navn)
+    server = 'daniels-MacBook-Pro.local' # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
     database = 'varehusdb'
     username = 'root'
     password = ''
