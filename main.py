@@ -3,12 +3,11 @@ from tkinter import ttk
 import mysql.connector
 
 def connect_DB():
-    server = 'daniels-MacBook-Pro.local'
+    server = 'daniels-MacBook-Pro.local' # Husk å endre til riktig servernavn (kan kjøre select * from ansatt Limit 10; for å finne navn)
     database = 'varehusdb'
     username = 'root'
     password = ''
 
-    # Establishing a connection to the MySQL database
     cnxn = mysql.connector.connect(
         host=server,
         database=database,
