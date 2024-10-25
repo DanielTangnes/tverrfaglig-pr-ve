@@ -27,6 +27,7 @@ def connect_DB():
 root = tk.Tk()
 root.title("test display")
 root.geometry("600x400")
+root.eval('tk::PlaceWindow . center')
 
 tree = ttk.Treeview(root)
 tree['columns'] = ("test1", "test2", "test3")
