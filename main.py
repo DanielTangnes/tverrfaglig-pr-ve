@@ -1,21 +1,26 @@
 import tkinter as tk
-import pyodbc
+import mysql.connector
 
-server = 'your_server_name'
-database = 'your_database_name'
-username = 'your_username'
-password = 'your_password'
+server = 'daniels-MacBook-Pro.local'
+database = 'varehusdb'
+username = 'root'
+password = ''
 
-# Establishing a connection to the SQL Server
-cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};\
-                      SERVER='+server+';\
-                      DATABASE='+database+';\
-                      UID='+username+';\
-                      PWD='+ password)
+# Establishing a connection to the MySQL database
+cnxn = mysql.connector.connect(
+    host=server,
+    database=database,
+    user=username,
+    password=password
+)
 
 cursor = cnxn.cursor()
 
-def connect_db():
+# Example query
+cursor.execute("SHOW TABLES")
+for table in cursor:
+    print(table)
 
-
-def display_varelager():
+# Remember to close the cursor and connection when done
+cursor.close()
+cnxn.close()
