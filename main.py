@@ -31,4 +31,4 @@ def hent_inventar():
     return []
 
 print(hent_inventar())
-#test
+#testtest
