@@ -8,20 +8,14 @@ def connect_DB():
     username = 'root'
     password = ''
 
-    cnxn = mysql.connector.connect(
+    connection = mysql.connector.connect(
         host=server,
         database=database,
         user=username,
         password=password
     )
 
-    cursor = cnxn.cursor()
-
-    cursor.execute("select * from ansatt")
-    rows = cursor.fetchall()
-    cnxn.close()
-
-    return rows
+    return connection
 
 ### Displayer tabell i GUI
 root = tk.Tk()
