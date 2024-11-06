@@ -1,13 +1,13 @@
-import tkinter as tk
-from tkinter import ttk
+#import tkinter as tk
+#from tkinter import ttk
 import mysql.connector
 
 def connect_DB():
     try:
-        server = 'daniels-MacBook-Pro.local' # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
+        server = 'localhost' # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
         database = 'varehusdb'
         username = 'root'
-        password = ''
+        password = 'root'
 
         connection = mysql.connector.connect(
             host=server,
@@ -24,8 +24,11 @@ def hent_inventar():
     connection = connect_DB()
     if connection:
         cursor = connection.cursor()
-        cursor.execute('spørring')
-        inventar = cursor.fetchall()
+        cursor.execute("select * from varehusdb.vare")
+        orders = cursor.fetchall()
         connection.close()
-        return inventar
+        return orders
     return []
+
+print(hent_inventar())
+#test
