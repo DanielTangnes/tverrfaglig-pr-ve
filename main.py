@@ -3,33 +3,29 @@ from tkinter import ttk
 import mysql.connector
 
 def connect_DB():
-    server = 'daniels-MacBook-Pro.local' # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
-    database = 'varehusdb'
-    username = 'root'
-    password = ''
+    try:
+        server = 'daniels-MacBook-Pro.local' # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
+        database = 'varehusdb'
+        username = 'root'
+        password = ''
 
-    connection = mysql.connector.connect(
-        host=server,
-        database=database,
-        user=username,
-        password=password
-    )
+        connection = mysql.connector.connect(
+            host=server,
+            database=database,
+            user=username,
+            password=password
+        )
 
-    return connection
+        return connection
+    except Exception as e:
+        return None
 
-### Displayer tabell i GUI
-root = tk.Tk()
-root.title("test display")
-root.geometry("600x400")
-root.eval('tk::PlaceWindow . center')
-
-tree = ttk.Treeview(root)
-tree['columns'] = ("test1", "test2", "test3")
-
-rows = connect_DB()
-for row in rows:
-    tree.insert("", "end", values=row)
-
-tree.pack(pady=20)
-
-root.mainloop()
+def hent_inventar():
+    connection = connect_DB()
+    if connection:
+        cursor = connection.cursor()
+        cursor.execute('spørring')
+        inventar = cursor.fetchall()
+        connection.close()
+        return inventar
+    return []
