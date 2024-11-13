@@ -3,40 +3,56 @@ from tkinter import ttk
 import mysql.connector
 
 def connect_DB():
-    server = 'localhost' # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
+    server = 'localhost'  # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
     database = 'varehusdb'
     username = 'root'
     password = 'Passord'
 
-    connection = mysql.connector.connect(
-        host=server,
-        database=database,
-        user=username,
-        password=password
-    )
+    try:
+        connection = mysql.connector.connect(
+            host=server,
+            database=database,
+            user=username,
+            password=password
+        )
+        return connection
+    except Exception as e:
+        return None
 
-    return connection
+def ordre_db():
+    connection = connect_DB()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            cursor.callproc('alle_ordre')
 
-def ordre():
-    con1 = connect_DB()
-    cur1 = con1.cursor()
-    cur1.execute('SELECT * FROM ordre')
-    rows = cur1.fetchall()
-    for row in rows:
-        print(row)
-        tree1.insert('', 'end', values=row)
-    con1.close()
+            # Fetch the results from the stored procedure
+            for result in cursor.stored_results():
+                rows = result.fetchall()
+                for row in rows:
+                    print(row)
+                    tree2.insert('', 'end', values=row)
+        finally:
+            cursor.close()
+            connection.close()
 
-def kunde():
-    con2 = connect_DB()
-    cur2 = con2.cursor()
-    cur2.execute('SELECT * FROM kunde')
-    rows = cur2.fetchall()
-    for row in rows:
-        print(row)
-        tree2.insert('', 'end', values=row)
-    con2.close()
 
+def kunde_db():
+    connection = connect_DB()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            cursor.callproc('alle_kunder')
+
+            # Fetch the results from the stored procedure
+            for result in cursor.stored_results():
+                rows = result.fetchall()
+                for row in rows:
+                    print(row)
+                    tree1.insert('', 'end', values=row)
+        finally:
+            cursor.close()
+            connection.close()
 
 ### Displayer tabell i GUI
 root = tk.Tk()
@@ -75,9 +91,9 @@ tree1.heading("#2", text="FNAME")
 tree1.column("#3", anchor=tk.CENTER)
 tree1.heading("#3", text="LNAME")
 tree1.pack()
-button1 = tk.Button(tab2, text="Oppdater ordre", command= kunde)
+button1 = tk.Button(tab2, text="Hent Ordre", command= ordre_db)
 button1.pack(pady=10)
-button2 = tk.Button(tab1, text="Oppdater kunde", command= ordre)
+button2 = tk.Button(tab1, text="Hent Kunde", command= kunde_db)
 button2.pack(pady=10)
 
 
