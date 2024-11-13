@@ -3,6 +3,7 @@ from tkinter import ttk
 import mysql.connector
 from flask import Flask, jsonify
 import threading
+import pandas as pd
 
 app = Flask(__name__)
 def run_flask():
@@ -52,9 +53,11 @@ def api_test():
     con = connect_DB()
     cur = con.cursor()
     cur.execute('SELECT * FROM vare')
+    names = [x[0] for x in cur.description]
     rows = cur.fetchall()
     con.close()
-    return jsonify(rows)
+    df = pd.DataFrame(rows, columns=names)
+    return jsonify(df.to_dict(orient='records'))
 
 
 ### Displayer tabell i GUI
