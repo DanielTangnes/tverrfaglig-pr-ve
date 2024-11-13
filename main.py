@@ -1,12 +1,22 @@
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
+from flask import Flask, jsonify
+import threading
+
+app = Flask(__name__)
+def run_flask():
+    app.run()
+
+flask_thread = threading.Thread(target=run_flask)
+flask_thread.daemon = True
+flask_thread.start()
 
 def connect_DB():
     server = 'localhost' # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
     database = 'varehusdb'
     username = 'root'
-    password = 'Passord'
+    password = 'root'
 
     connection = mysql.connector.connect(
         host=server,
@@ -36,6 +46,15 @@ def kunde():
         print(row)
         tree2.insert('', 'end', values=row)
     con2.close()
+
+@app.route('/api/test', methods=['GET'])
+def api_test():
+    con = connect_DB()
+    cur = con.cursor()
+    cur.execute('SELECT * FROM vare')
+    rows = cur.fetchall()
+    con.close()
+    return jsonify(rows)
 
 
 ### Displayer tabell i GUI
