@@ -14,10 +14,10 @@ flask_thread.daemon = True
 flask_thread.start()
 
 def connect_DB():
-    server = 'localhost'  # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
+    server = 'mysql.ekvi.no'  # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
     database = 'varehusdb'
-    username = 'root'
-    password = 'root'
+    username = '23ITDNett'
+    password = 'TVERRFAGLIG'
     try:
         connection = mysql.connector.connect(
             host=server,
@@ -34,7 +34,7 @@ def ordre_db():
     if connection:
         try:
             cursor = connection.cursor()
-            cursor.callproc('alle_ordre')
+            cursor.callproc('ordreliste')
 
             # Fetch the results from the stored procedure
             for result in cursor.stored_results():
@@ -63,7 +63,41 @@ def kunde_db():
         finally:
             cursor.close()
             connection.close()
-            
+
+
+def valgt_ordre_db(ordrenumer):
+    connection = connect_DB()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            cursor.callproc('valgt_ordre', [ordrenumer,])
+
+            # Fetch the results from the stored procedure
+            for result in cursor.stored_results():
+                rows = result.fetchall()
+                for row in rows:
+                    print(row)
+                    tree1.insert('', 'end', values=row)
+        finally:
+            cursor.close()
+            connection.close()
+
+def varehus_db():
+    connection = connect_DB()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            cursor.callproc('varehus')
+
+            # Fetch the results from the stored procedure
+            for result in cursor.stored_results():
+                rows = result.fetchall()
+                for row in rows:
+                    print(row)
+                    tree1.insert('', 'end', values=row)
+        finally:
+            cursor.close()
+            connection.close()
 
 @app.route('/api/test', methods=['GET'])
 def api_test():
