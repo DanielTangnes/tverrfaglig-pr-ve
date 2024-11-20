@@ -1,17 +1,7 @@
-import tkinter as tk
-from tkinter import ttk
+from display import gui
 import mysql.connector
-from flask import Flask, jsonify
-import threading
-import pandas as pd
+import api
 
-app = Flask(__name__)
-def run_flask():
-    app.run()
-
-flask_thread = threading.Thread(target=run_flask)
-flask_thread.daemon = True
-flask_thread.start()
 
 def connect_DB():
     server = 'mysql.ekvi.no'  # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
@@ -29,7 +19,9 @@ def connect_DB():
     except Exception as e:
         return None
 
-def ordre_db():
+
+#Funksjon for henting av ordreliste
+def ordre_db(tree2):
     connection = connect_DB()
     if connection:
         try:
@@ -47,7 +39,8 @@ def ordre_db():
             connection.close()
 
 
-def kunde_db():
+#Funksjon for henting av kundeliste
+def kunde_db(tree1):
     connection = connect_DB()
     if connection:
         try:
@@ -65,7 +58,8 @@ def kunde_db():
             connection.close()
 
 
-def valgt_ordre_db(ordrenumer):
+#Funksjon for henting av detaljer rundt en valgt ordre
+def valgt_ordre_db(ordrenumer, tree1):
     connection = connect_DB()
     if connection:
         try:
@@ -82,7 +76,9 @@ def valgt_ordre_db(ordrenumer):
             cursor.close()
             connection.close()
 
-def varehus_db():
+
+#Funksjon for henting av varelager
+def varehus_db(tree1):
     connection = connect_DB()
     if connection:
         try:
@@ -99,59 +95,50 @@ def varehus_db():
             cursor.close()
             connection.close()
 
-@app.route('/api/test', methods=['GET'])
-def api_test():
-    con = connect_DB()
-    cur = con.cursor()
-    cur.execute('SELECT * FROM vare')
-    names = [x[0] for x in cur.description]
-    rows = cur.fetchall()
-    con.close()
-    df = pd.DataFrame(rows, columns=names)
-    return jsonify(df.to_dict(orient='records'))
 
-### Displayer tabell i GUI
-root = tk.Tk()
-root.title("test display")
-root.geometry("600x400")
-root.eval('tk::PlaceWindow . center')
-tabControl = ttk.Notebook(root)
-
-tab1 = ttk.Frame(tabControl)
-tab2 = ttk.Frame(tabControl)
-
-tabControl.add(tab1, text="Kunde")
-tabControl.add(tab2, text="Ordre")
-
-tabControl.pack(expand=1, fill="both")
-
-tree2 = ttk.Treeview(tab2, column=("c1", "c2", "c3", "c4", "c5"), show='headings')
-tree2.column("#1", anchor=tk.CENTER)
-tree2.heading("#1", text="OrdreNr")
-tree2.column("#2", anchor=tk.CENTER)
-tree2.heading("#2", text="OrdreDato")
-tree2.column("#3", anchor=tk.CENTER)
-tree2.heading("#3", text="SendtDato")
-tree2.column("#4", anchor=tk.CENTER)
-tree2.heading("#4", text="BetaltDato")
-tree2.column("#5", anchor=tk.CENTER)
-tree2.heading("#5", text="KundeNr")
-tree2.pack()
+#genererer kundenr for å opprette nye kunder
+def generer_knr():
+    connection = connect_DB()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            cursor.execute("SELECT MAX(KNr) FROM kunde")
+            max_knr = cursor.fetchone()[0]
+            if max_knr is None:
+                new_knr = 1
+            else:
+                new_knr = max_knr + 1
+            return new_knr
+        finally:
+            cursor.close()
+            connection.close()
 
 
-tree1 = ttk.Treeview(tab1, column=("c1", "c2", "c3"), show='headings')
-tree1.column("#1", anchor=tk.CENTER)
-tree1.heading("#1", text="ID")
-tree1.column("#2", anchor=tk.CENTER)
-tree1.heading("#2", text="FNAME")
-tree1.column("#3", anchor=tk.CENTER)
-tree1.heading("#3", text="LNAME")
-tree1.pack()
-button1 = tk.Button(tab2, text="Hent Ordre", command= ordre_db)
-button1.pack(pady=10)
-button2 = tk.Button(tab1, text="Hent Kunde", command= kunde_db)
-button2.pack(pady=10)
+#Funksjon for opprettelse av kunde
+def opprette_kunde(fornavn, etternavn, adresse, postnr):
+    connection = connect_DB()
+    knr = generer_knr()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(
+                'INSERT INTO kunde (KNr, Fornavn, Etternavn, Adresse, PostNr) '
+                'VALUES (%s, %s, %s, %s, %s);',
+                (knr, fornavn, etternavn, adresse, postnr)
+            )
+            connection.commit()
+        finally:
+            cursor.close()
+            connection.close()
 
 
-
-root.mainloop()
+if __name__ == '__main__':
+    root, tree1, tree2, fornavn_entry, etternavn_entry, adresse_entry, postnr_entry = gui(
+        hent_ordreliste_cmd=lambda: ordre_db(tree2),
+        hent_kundeliste_cmd=lambda: kunde_db(tree1),
+        opprett_kunde_cmd=lambda: opprette_kunde(
+            fornavn_entry.get(), etternavn_entry.get(), adresse_entry.get(), postnr_entry.get()
+        )
+    )
+    api.run_api(connect_DB())
+    root.mainloop()
