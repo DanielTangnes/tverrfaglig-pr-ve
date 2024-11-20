@@ -1,4 +1,6 @@
 import threading
+from typing import final
+
 from flask import Flask, jsonify
 import pandas as pd
 
@@ -16,13 +18,13 @@ def run_api(connect_DB):
     flask_thread.start()
 
 
-@app.route('/api/test', methods=['GET'])
+@app.route('/api/vare', methods=['GET'])
 def api_test():
     con = connect_db
     cur = con.cursor()
     cur.execute('SELECT * FROM vare')
     names = [x[0] for x in cur.description]
     rows = cur.fetchall()
-    con.close()
     df = pd.DataFrame(rows, columns=names)
+    cur.close()
     return jsonify(df.to_dict(orient='records'))
