@@ -1,6 +1,4 @@
 import threading
-from typing import final
-
 from flask import Flask, jsonify
 import pandas as pd
 

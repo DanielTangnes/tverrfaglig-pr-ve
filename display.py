@@ -10,7 +10,7 @@ button_select_clr = '#ffb800'
 def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=None, varehus_cmd=None, slett_kunde_cmd=None):
     root = tk.Tk()
     root.title("Gruppe1 V0.3")
-    root.geometry("1000x400")
+    root.geometry("1000x450")
     root.eval('tk::PlaceWindow . center')
 
     def on_tab_select(event):
@@ -29,6 +29,19 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
             if varehus_cmd:
                 varehus_cmd()
             print("Varehus tab selected")
+
+
+    selected_knr = tk.StringVar()
+
+
+    def on_treeview_click(event):
+        selected_item = tree1.selection()  # Hent valgt data
+        if selected_item:
+            item_values = tree1.item(selected_item)["values"]
+            if item_values:
+                selected_knr.set(item_values[0])  # Lagre Kundenr til StringVar
+                print("Kundenr {} valgt".format(selected_knr.get()))
+
 
     tabControl = ttk.Notebook(root)
 
@@ -68,6 +81,7 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     tree1.heading("#4", text="Adressse")
     tree1.column("#5", anchor=tk.CENTER)
     tree1.heading("#5", text="Postnr")
+    tree1.bind("<ButtonRelease-1>", on_treeview_click)
     tree1.pack()
 
     tree2 = ttk.Treeview(tab2, column=("c1", "c2", "c3", "c4", "c5"), show='headings')
@@ -132,4 +146,4 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     button5 = ttk.Button(tab3, text="Oppdater Varehus", command=varehus_cmd, style='TButton')
     button5.pack(pady=10)
 
-    return root, tree1, tree2, tree3, fornavn_entry, etternavn_entry, adresse_entry, postnr_entry
+    return root, tree1, tree2, tree3, fornavn_entry, etternavn_entry, adresse_entry, postnr_entry, selected_knr
