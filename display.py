@@ -1,22 +1,74 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, Button
 
+background_clr = '#fcf2e9'
+tab_background_clr = '#fab97f'
+button_clr = '#fab97f'
+button_hover_clr = '#ff9600'
+button_select_clr = '#ffb800'
 
-def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=None):
+def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=None, varehus_cmd=None, slett_kunde_cmd=None):
     root = tk.Tk()
-    root.title("test display")
+    root.title("Gruppe1 V0.3")
     root.geometry("1000x400")
     root.eval('tk::PlaceWindow . center')
 
+    def on_tab_select(event):
+        selected_tab = tabControl.index(tabControl.select())
+        if selected_tab == 0:
+            if hent_kundeliste_cmd:
+                hent_kundeliste_cmd()
+            print("Kunde tab selected")
+            # Placeholder command for Kunde tab
+        elif selected_tab == 1:
+            if hent_ordreliste_cmd:
+                hent_ordreliste_cmd()
+            print("Ordre tab selected")
+            # Placeholder command for Ordre tab
+        elif selected_tab == 2:
+            if varehus_cmd:
+                varehus_cmd()
+            print("Varehus tab selected")
+
     tabControl = ttk.Notebook(root)
 
-    tab1 = ttk.Frame(tabControl)
-    tab2 = ttk.Frame(tabControl)
+    style = ttk.Style()
+    style.theme_use('default')
+    style.configure('TNotebook', background=tab_background_clr)
+    style.configure('TNotebook.Tab', background=button_clr)
+    style.map('TNotebook.Tab', background=[('selected', button_hover_clr), ('active', button_select_clr)])
 
-    tabControl.add(tab1, text="Kunde")
+
+    style.configure('TButton', background=button_clr)
+    style.map('TButton', background=[('active', button_hover_clr), ('active', button_select_clr)])
+
+
+    tab1 = tk.Frame(tabControl, background=background_clr)
+    tab2 = tk.Frame(tabControl, background=background_clr)
+    tab3 = tk.Frame(tabControl, background=background_clr)
+
+
+    tabControl.bind("<<NotebookTabChanged>>", on_tab_select)
+
+
+    tabControl.add(tab1, text="Kunde",)
     tabControl.add(tab2, text="Ordre")
+    tabControl.add(tab3, text="Varehus")
 
     tabControl.pack(expand=1, fill="both")
+
+    tree1 = ttk.Treeview(tab1, column=("c1", "c2", "c3", "c4", "c5"), show='headings')
+    tree1.column("#1", anchor=tk.CENTER)
+    tree1.heading("#1", text="Kundenr")
+    tree1.column("#2", anchor=tk.CENTER)
+    tree1.heading("#2", text="Fornavn")
+    tree1.column("#3", anchor=tk.CENTER)
+    tree1.heading("#3", text="Etternavn")
+    tree1.column("#4", anchor=tk.CENTER)
+    tree1.heading("#4", text="Adressse")
+    tree1.column("#5", anchor=tk.CENTER)
+    tree1.heading("#5", text="Postnr")
+    tree1.pack()
 
     tree2 = ttk.Treeview(tab2, column=("c1", "c2", "c3", "c4", "c5"), show='headings')
     tree2.column("#1", anchor=tk.CENTER)
@@ -31,18 +83,20 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     tree2.heading("#5", text="KundeNr")
     tree2.pack()
 
-    tree1 = ttk.Treeview(tab1, column=("c1", "c2", "c3", "c4", "c5"), show='headings')
-    tree1.column("#1", anchor=tk.CENTER)
-    tree1.heading("#1", text="Kundenr")
-    tree1.column("#2", anchor=tk.CENTER)
-    tree1.heading("#2", text="Fornavn")
-    tree1.column("#3", anchor=tk.CENTER)
-    tree1.heading("#3", text="Etternavn")
-    tree1.column("#4", anchor=tk.CENTER)
-    tree1.heading("#4", text="Adressse")
-    tree1.column("#5", anchor=tk.CENTER)
-    tree1.heading("#5", text="Postnr")
-    tree1.pack()
+    tree3 = ttk.Treeview(tab3, column=("c1", "c2", "c3", "c4", "c5", "c6"), show='headings')
+    tree3.column("#1", anchor=tk.CENTER)
+    tree3.heading("#1", text="VareNr")
+    tree3.column("#2", anchor=tk.CENTER)
+    tree3.heading("#2", text="Betegnelse")
+    tree3.column("#3", anchor=tk.CENTER)
+    tree3.heading("#3", text="Pris")
+    tree3.column("#4", anchor=tk.CENTER)
+    tree3.heading("#4", text="Katogori nr")
+    tree3.column("#5", anchor=tk.CENTER)
+    tree3.heading("#5", text="Antall")
+    tree3.column("#6", anchor=tk.CENTER)
+    tree3.heading("#6", text="Hylle")
+    tree3.pack()
 
     entry_frame = tk.Frame(tab1)
     entry_frame.pack(pady=10)
@@ -67,11 +121,15 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     postnr_entry.bind("<Button-1>", lambda e: postnr_entry.delete(0, tk.END))
     postnr_entry.insert(0, "Postnr")
 
-    button1 = tk.Button(tab2, text="Hent Ordreliste", command=hent_ordreliste_cmd)
+    button1 = ttk.Button(tab2, text="Oppdater Ordreliste", command=hent_ordreliste_cmd)
     button1.pack(pady=10)
-    button2 = tk.Button(tab1, text="Hent Kundeliste", command=hent_kundeliste_cmd)
+    button2 = ttk.Button(tab1, text="Oppdater Kundeliste", command=hent_kundeliste_cmd)
     button2.pack(pady=10)
-    button3 = tk.Button(tab1, text="Opprett Kunde", command=opprett_kunde_cmd)
+    button3 = ttk.Button(tab1, text="Opprett Kunde", command=opprett_kunde_cmd)
     button3.pack(pady=10)
+    button4 = ttk.Button(tab1, text="Slett Kunde", command=slett_kunde_cmd)
+    button4.pack(pady=10)
+    button5 = ttk.Button(tab3, text="Oppdater Varehus", command=varehus_cmd, style='TButton')
+    button5.pack(pady=10)
 
-    return root, tree1, tree2, fornavn_entry, etternavn_entry, adresse_entry, postnr_entry
+    return root, tree1, tree2, tree3, fornavn_entry, etternavn_entry, adresse_entry, postnr_entry
