@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, Button
+from tkinter import ttk, Button, Toplevel
 
 background_clr = '#fcf2e9'
 tab_background_clr = '#fab97f'
@@ -7,7 +7,7 @@ button_clr = '#fab97f'
 button_hover_clr = '#ff9600'
 button_select_clr = '#ffb800'
 
-def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=None, varehus_cmd=None, slett_kunde_cmd=None):
+def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=None, varehus_cmd=None, slett_kunde_cmd=None, hent_valgt_ordre_cmd=None):
     root = tk.Tk()
     root.title("Gruppe1 V0.3")
     root.geometry("1000x450")
@@ -41,6 +41,34 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
             if item_values:
                 selected_knr.set(item_values[0])  # Lagre Kundenr til StringVar
                 print("Kundenr {} valgt".format(selected_knr.get()))
+
+
+    selected_ordre = tk.StringVar()
+
+    def open_popup(event, fetch_ordre_detaljer):
+        selected_item = tree2.selection()
+        if selected_item:
+            item_values = tree2.item(selected_item)["values"]
+            if item_values:
+                selected_ordre.set(item_values[0])  # Lagre OrdreNr
+                print("Ordre {} valgt".format(selected_ordre.get()))
+
+                top = Toplevel(root)
+                top.geometry("500x250")
+                top.title(f"Ordre Detaljer for ordre {selected_ordre.get()}")
+
+                tree_popup = ttk.Treeview(top, columns=("col1", "col2", "col3", "col4"), show='headings')
+                tree_popup.column("#1", anchor=tk.CENTER, width=100)
+                tree_popup.heading("#1", text="OrdreNr")
+                tree_popup.column("#2", anchor=tk.CENTER, width=150)
+                tree_popup.heading("#2", text="VNr")
+                tree_popup.column("#3", anchor=tk.CENTER, width=150)
+                tree_popup.heading("#3", text="PrisPrEnhet")
+                tree_popup.column("#4", anchor=tk.CENTER, width=150)
+                tree_popup.heading("#4", text="Antall")
+                tree_popup.pack(fill=tk.BOTH, expand=True)
+
+                fetch_ordre_detaljer(selected_ordre.get(), tree_popup)
 
 
     tabControl = ttk.Notebook(root)
@@ -95,6 +123,7 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     tree2.heading("#4", text="BetaltDato")
     tree2.column("#5", anchor=tk.CENTER)
     tree2.heading("#5", text="KundeNr")
+    tree2.bind("<Double-1>", lambda event: open_popup(event, hent_valgt_ordre_cmd))
     tree2.pack()
 
     tree3 = ttk.Treeview(tab3, column=("c1", "c2", "c3", "c4", "c5", "c6"), show='headings')
