@@ -137,7 +137,6 @@ def opprette_kunde(fornavn, etternavn, adresse, postnr):
 
 def slett_kunde(KNr):
     connection = connect_DB()
-    knr = generer_knr()
     if connection:
         try:
             cursor = connection.cursor()
