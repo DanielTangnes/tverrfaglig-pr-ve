@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, Button, Toplevel
+from ttkwidgets.autocomplete import AutocompleteCombobox
 
 #Fargebibliotek
 background_clr = '#fcf2e9'
@@ -8,7 +9,7 @@ button_clr = '#fab97f'
 button_hover_clr = '#ff9600'
 button_select_clr = '#ffb800'
 
-def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=None, varehus_cmd=None, slett_kunde_cmd=None, hent_valgt_ordre_cmd=None):
+def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=None, varehus_cmd=None, slett_kunde_cmd=None, hent_valgt_ordre_cmd=None, postkoder_cmd=None):
     root = tk.Tk()
     root.title("Gruppe1 V0.3")
     root.geometry("1000x450")
@@ -164,10 +165,12 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     adresse_entry.bind("<Button-1>", lambda e: adresse_entry.delete(0, tk.END))
     adresse_entry.insert(0, "Adresse")
 
-    postnr_entry = tk.Entry(entry_frame)
-    postnr_entry.grid(row=0, column=3, padx=5)
-    postnr_entry.bind("<Button-1>", lambda e: postnr_entry.delete(0, tk.END))
-    postnr_entry.insert(0, "Postnr")
+    #AutoComplete godtar ikke postkoder_cmd direkte, så må kjøres som en liste.
+    post_nr = postkoder_cmd()
+    postnr_combo = AutocompleteCombobox(entry_frame, completevalues=post_nr)
+    postnr_combo.grid(row=0, column=3, padx=5)
+    postnr_combo.bind("<Button-1>", lambda e: postnr_combo.delete(0, tk.END))
+    postnr_combo.insert(0, "Postnr")
 
     #knapper i ordretab
     button1 = ttk.Button(tab2, text="Oppdater Ordreliste", command=hent_ordreliste_cmd)
@@ -185,4 +188,4 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     button5 = ttk.Button(tab3, text="Oppdater Varehus", command=varehus_cmd, style='TButton')
     button5.pack(pady=10)
 
-    return root, tree1, tree2, tree3, fornavn_entry, etternavn_entry, adresse_entry, postnr_entry, selected_knr
+    return root, tree1, tree2, tree3, fornavn_entry, etternavn_entry, adresse_entry, postnr_combo, selected_knr
