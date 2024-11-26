@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, Button, Toplevel
 
+#Fargebibliotek
 background_clr = '#fcf2e9'
 tab_background_clr = '#fab97f'
 button_clr = '#fab97f'
@@ -13,6 +14,7 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     root.geometry("1000x450")
     root.eval('tk::PlaceWindow . center')
 
+    #funksjon for automatisk utfylling av tabeler når tab åpnes.
     def on_tab_select(event):
         selected_tab = tabControl.index(tabControl.select())
         if selected_tab == 0:
@@ -73,17 +75,20 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
 
     tabControl = ttk.Notebook(root)
 
+    #Stilcbibliotek
     style = ttk.Style()
     style.theme_use('default')
+    #Stil for bakgrunn på tab bar
     style.configure('TNotebook', background=tab_background_clr)
+    #stil for farger på tabs basert på om de er aktive, inaktive eller musepekeren er over fanen.
     style.configure('TNotebook.Tab', background=button_clr)
     style.map('TNotebook.Tab', background=[('selected', button_hover_clr), ('active', button_select_clr)])
 
-
+    #Stil for alle knapper i applikasjonen
     style.configure('TButton', background=button_clr)
     style.map('TButton', background=[('active', button_hover_clr), ('active', button_select_clr)])
 
-
+    #setter farger på alle tabs
     tab1 = tk.Frame(tabControl, background=background_clr)
     tab2 = tk.Frame(tabControl, background=background_clr)
     tab3 = tk.Frame(tabControl, background=background_clr)
@@ -164,14 +169,19 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     postnr_entry.bind("<Button-1>", lambda e: postnr_entry.delete(0, tk.END))
     postnr_entry.insert(0, "Postnr")
 
+    #knapper i ordretab
     button1 = ttk.Button(tab2, text="Oppdater Ordreliste", command=hent_ordreliste_cmd)
     button1.pack(pady=10)
+
+    # knapper i kundetab
     button2 = ttk.Button(tab1, text="Oppdater Kundeliste", command=hent_kundeliste_cmd)
     button2.pack(pady=10)
     button3 = ttk.Button(tab1, text="Opprett Kunde", command=opprett_kunde_cmd)
     button3.pack(pady=10)
     button4 = ttk.Button(tab1, text="Slett Kunde", command=slett_kunde_cmd)
     button4.pack(pady=10)
+
+    #Knapper i Varehus tab
     button5 = ttk.Button(tab3, text="Oppdater Varehus", command=varehus_cmd, style='TButton')
     button5.pack(pady=10)
 
