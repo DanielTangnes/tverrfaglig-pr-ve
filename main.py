@@ -72,9 +72,7 @@ def valgt_ordre_db(ordrenumer, tree):
                 for row in rows:
                     print(row)
                     tree.insert('', 'end', values=row)
-                    for row in rows:
-                        print(row)
-                        tree.insert('', 'end', values=row)
+
         finally:
             cursor.close()
             connection.close()
