@@ -57,10 +57,10 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
                 print("Ordre {} valgt".format(selected_ordre.get()))
 
                 top = Toplevel(root)
-                top.geometry("500x250")
+                top.geometry("1000x250")
                 top.title("Ordre Detaljer for ordre {}".format(selected_ordre.get()))
 
-                tree_popup = ttk.Treeview(top, columns=("col1", "col2", "col3", "col4"), show='headings')
+                tree_popup = ttk.Treeview(top, columns=("col1", "col2", "col3", "col4","col5","col6","col7"), show='headings')
                 tree_popup.column("#1", anchor=tk.CENTER, width=100)
                 tree_popup.heading("#1", text="KNr")
                 tree_popup.column("#2", anchor=tk.CENTER, width=150)
