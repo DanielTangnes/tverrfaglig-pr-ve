@@ -1,6 +1,7 @@
 from display import gui
 import mysql.connector
 import api
+from tkinter import messagebox
 
 
 def connect_DB():
@@ -34,6 +35,9 @@ def ordre_db(tree2):
                 for row in rows:
                     print(row)
                     tree2.insert('', 'end', values=row) # Setter inn data i treeview
+        except Exception as e:
+            messagebox.showerror('Error', f'error: {e}')
+            print(e)
         finally:
             # Kobler fra DB
             cursor.close()
@@ -55,6 +59,9 @@ def kunde_db(tree1):
                 for row in rows:
                     print(row)
                     tree1.insert('', 'end', values=row)
+        except Exception as e:
+            messagebox.showerror('Error', f'error: {e}')
+            print(e)
         finally:
             # Kobler fra DB
             cursor.close()
@@ -75,7 +82,9 @@ def valgt_ordre_db(ordrenumer, tree):
                 for row in rows:
                     print(row)
                     tree.insert('', 'end', values=row)
-
+        except Exception as e:
+            messagebox.showerror('Error', f'error: {e}')
+            print(e)
         finally:
             # Kobler fra DB
             cursor.close()
@@ -96,6 +105,9 @@ def varehus_db(tree3):
                 for row in rows:
                     print(row)
                     tree3.insert('', 'end', values=row)
+        except Exception as e:
+            messagebox.showerror('Error', f'error: {e}')
+            print(e)
         finally:
             # Kobler fra DB
             cursor.close()
@@ -110,6 +122,9 @@ def opprette_kunde(fornavn, etternavn, adresse, postnr, tree1):
             cursor = connection.cursor()
             cursor.callproc("Ny_Kunde", (fornavn, etternavn, adresse, postnr)) #kjører Ny_kunde procedure
             connection.commit()
+        except Exception as e:
+            messagebox.showerror('Error', f'error: {e}')
+            print(e)
         finally:
             #Kobler fra DB
             cursor.close()
@@ -124,6 +139,9 @@ def slett_kunde(KNr, tree1):
             cursor = connection.cursor()
             cursor.callproc('SlettKunde', (KNr,)) #kjører slettkunde procedure
             connection.commit()
+        except Exception as e:
+            messagebox.showerror('Error', f'error: {e}')
+            print(e)
         finally:
             #Kobler fra DB
             cursor.close()
@@ -141,6 +159,9 @@ def postkoder():
             post_nr_liste = list(sum(post_nr, ()))
 
             return post_nr_liste
+        except Exception as e:
+            messagebox.showerror('Error', f'error: {e}')
+            print(e)
         finally:
             # Kobler fra DB
             cursor.close()
