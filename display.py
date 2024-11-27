@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, Button, Toplevel
+from tkinter import ttk, Toplevel
 from ttkwidgets.autocomplete import AutocompleteCombobox
 
 #Fargebibliotek
@@ -40,7 +40,7 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     def on_treeview_click(event):
         selected_item = tree1.selection()  # Hent valgt data
         if selected_item:
-            item_values = tree1.item(selected_item)["values"]
+            item_values = tree1.item(selected_item)["values"] # Henter ut verdiene i valgt rad
             if item_values:
                 selected_knr.set(item_values[0])  # Lagre Kundenr til StringVar
                 print("Kundenr {} valgt".format(selected_knr.get()))
@@ -51,16 +51,17 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     def open_popup(event, fetch_ordre_detaljer):
         selected_item = tree2.selection()
         if selected_item:
-            item_values = tree2.item(selected_item)["values"]
+            item_values = tree2.item(selected_item)["values"] # Henter ut verdiene i valgt rad
             if item_values:
-                selected_ordre.set(item_values[0])  # Lagre OrdreNr
+                selected_ordre.set(item_values[0])  # Lagre OrdreNr (første kolonne i raden)
                 print("Ordre {} valgt".format(selected_ordre.get()))
 
                 top = Toplevel(root)
-                top.geometry("1000x250")
+                top.geometry("") # Autosize popup vindu
                 top.title("Ordre Detaljer for ordre {}".format(selected_ordre.get()))
 
-                tree_popup = ttk.Treeview(top, columns=("col1", "col2", "col3", "col4","col5","col6","col7"), show='headings')
+                # Oppretter kolonner i popup vindu
+                tree_popup = ttk.Treeview(top, columns=("col1", "col2", "col3", "col4","col5","col6","col7", "col8"), show='headings')
                 tree_popup.column("#1", anchor=tk.CENTER, width=100)
                 tree_popup.heading("#1", text="KNr")
                 tree_popup.column("#2", anchor=tk.CENTER, width=150)
@@ -75,6 +76,8 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
                 tree_popup.heading("#6", text="Antall")
                 tree_popup.column("#7", anchor=tk.CENTER, width=150)
                 tree_popup.heading("#7", text="Sum")
+                tree_popup.column("#8", anchor=tk.CENTER, width=155)
+                tree_popup.heading("#8", text="Betegnelse")
                 tree_popup.pack(fill=tk.BOTH, expand=True)
 
                 fetch_ordre_detaljer(selected_ordre.get(), tree_popup)
@@ -173,7 +176,7 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
 
     #AutoComplete godtar ikke postkoder_cmd direkte, så må kjøres som en liste.
     post_nr = postkoder_cmd()
-    postnr_combo = AutocompleteCombobox(entry_frame, completevalues=post_nr)
+    postnr_combo = AutocompleteCombobox(entry_frame, completevalues=post_nr, state="readonly")
     postnr_combo.grid(row=0, column=3, padx=5)
     postnr_combo.bind("<Button-1>", lambda e: postnr_combo.delete(0, tk.END))
     postnr_combo.insert(0, "Postnr")
