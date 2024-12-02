@@ -20,7 +20,7 @@ def run_api(connect_DB):
 def api_test():
     con = connect_db
     cur = con.cursor()
-    cur.execute('SELECT * FROM vare')
+    cur.execute('SELECT * FROM vare WHERE Antall>0')
     names = [x[0] for x in cur.description]
     rows = cur.fetchall()
     df = pd.DataFrame(rows, columns=names)
