@@ -11,7 +11,7 @@ button_select_clr = '#ffb800'
 
 def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=None, varehus_cmd=None, slett_kunde_cmd=None, hent_valgt_ordre_cmd=None, postkoder_cmd=None):
     root = tk.Tk()
-    root.title("Gruppe1 V0.3")
+    root.title("Gruppe1 V1.1")
     root.geometry("1000x450")
     root.eval('tk::PlaceWindow . center')
 
@@ -194,7 +194,7 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     button4.pack(pady=10)
 
     #Knapper i Varehus tab
-    button5 = ttk.Button(tab3, text="Oppdater Varehus", command=varehus_cmd, style='TButton')
+    button5 = ttk.Button(tab3, text="Oppdater Varehus", command=varehus_cmd)
     button5.pack(pady=10)
 
     return root, tree1, tree2, tree3, fornavn_entry, etternavn_entry, adresse_entry, postnr_combo, selected_knr
