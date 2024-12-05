@@ -1,14 +1,18 @@
+import os
+
 from display import gui
 import mysql.connector
 import api
 from tkinter import messagebox
 
 
+
 def connect_DB():
+
     server = 'mysql.ekvi.no'  # Husk å endre til riktig servernavn (kan kjøre SHOW VARIABLES LIKE '%hostname%' for å finne navn)
     database = 'varehusdb'
-    username = '23ITDNett'
-    password = 'TVERRFAGLIG'
+    username = os.environ['skoleMySQL']
+    password = os.environ['pSkoleMySQL']
     try:
         connection = mysql.connector.connect(
             host=server,
