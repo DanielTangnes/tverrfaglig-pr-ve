@@ -28,6 +28,7 @@ def ordre_db(tree2):
         try:
             cursor = connection.cursor()
             cursor.callproc('ordreliste')
+            tree2.delete(*tree2.get_children())
 
             # Fetch the results from the stored procedure
             for result in cursor.stored_results():
@@ -98,6 +99,7 @@ def varehus_db(tree3):
         try:
             cursor = connection.cursor()
             cursor.callproc('varehus')
+            tree3.delete(*tree3.get_children())
 
             # Fetch the results from the stored procedure
             for result in cursor.stored_results():
