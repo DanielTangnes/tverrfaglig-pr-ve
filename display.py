@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk, Toplevel
 from ttkwidgets.autocomplete import AutocompleteCombobox
+import logging
 
-#Fargebibliotek
+# Fargebibliotek
 background_clr = '#fcf2e9'
 tab_background_clr = '#fab97f'
 button_clr = '#fab97f'
@@ -15,150 +16,95 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     root.geometry("1000x450")
     root.eval('tk::PlaceWindow . center')
 
-    #funksjon for automatisk utfylling av tabeler når tab åpnes.
     def on_tab_select(event):
+        # Hent data når en fane velges
         selected_tab = tabControl.index(tabControl.select())
-        if selected_tab == 0:
-            if hent_kundeliste_cmd:
-                hent_kundeliste_cmd()
-            print("Kunde tab selected")
-            # Placeholder command for Kunde tab
-        elif selected_tab == 1:
-            if hent_ordreliste_cmd:
-                hent_ordreliste_cmd()
-            print("Ordre tab selected")
-            # Placeholder command for Ordre tab
-        elif selected_tab == 2:
-            if varehus_cmd:
-                varehus_cmd()
-            print("Varehus tab selected")
-
+        if selected_tab == 0 and hent_kundeliste_cmd:
+            hent_kundeliste_cmd()
+        elif selected_tab == 1 and hent_ordreliste_cmd:
+            hent_ordreliste_cmd()
+        elif selected_tab == 2 and varehus_cmd:
+            varehus_cmd()
 
     selected_knr = tk.StringVar()
 
-
     def on_treeview_click(event):
-        selected_item = tree1.selection()  # Hent valgt data
+        # Hent valgt kunde når en rad i treet klikkes
+        selected_item = tree1.selection()
         if selected_item:
-            item_values = tree1.item(selected_item)["values"] # Henter ut verdiene i valgt rad
+            item_values = tree1.item(selected_item)["values"]
             if item_values:
-                selected_knr.set(item_values[0])  # Lagre Kundenr til StringVar
-                print("Kundenr {} valgt".format(selected_knr.get()))
-
+                selected_knr.set(item_values)  # Sett kun kundenummeret
+                logging.info(f"Kundenr {selected_knr.get()} valgt")
 
     selected_ordre = tk.StringVar()
 
     def open_popup(event, fetch_ordre_detaljer):
+        # Åpne popup-vindu for å vise ordredetaljer
         selected_item = tree2.selection()
         if selected_item:
-            item_values = tree2.item(selected_item)["values"] # Henter ut verdiene i valgt rad
+            item_values = tree2.item(selected_item)["values"]
             if item_values:
-                selected_ordre.set(item_values[0])  # Lagre OrdreNr (første kolonne i raden)
-                print("Ordre {} valgt".format(selected_ordre.get()))
+                selected_ordre.set(item_values)
+                print(f"Ordre {selected_ordre.get()} valgt")
 
                 top = Toplevel(root)
-                top.geometry("") # Autosize popup vindu
-                top.title("Ordre Detaljer for ordre {}".format(selected_ordre.get()))
+                top.geometry("")
+                top.title(f"Ordre Detaljer for ordre {selected_ordre.get()}")
 
-                # Oppretter kolonner i popup vindu
-                tree_popup = ttk.Treeview(top, columns=("col1", "col2", "col3", "col4","col5","col6","col7", "col8"), show='headings')
-                tree_popup.column("#1", anchor=tk.CENTER, width=100)
-                tree_popup.heading("#1", text="KNr")
-                tree_popup.column("#2", anchor=tk.CENTER, width=150)
-                tree_popup.heading("#2", text="Fornavn")
-                tree_popup.column("#3", anchor=tk.CENTER, width=150)
-                tree_popup.heading("#3", text="Etternavn")
-                tree_popup.column("#4", anchor=tk.CENTER, width=150)
-                tree_popup.heading("#4", text="Adresse")
-                tree_popup.column("#5", anchor=tk.CENTER, width=150)
-                tree_popup.heading("#5", text="Ordre Nummer")
-                tree_popup.column("#6", anchor=tk.CENTER, width=150)
-                tree_popup.heading("#6", text="Antall")
-                tree_popup.column("#7", anchor=tk.CENTER, width=150)
-                tree_popup.heading("#7", text="Sum")
-                tree_popup.column("#8", anchor=tk.CENTER, width=155)
-                tree_popup.heading("#8", text="Betegnelse")
+                tree_popup = ttk.Treeview(top, columns=("col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8"), show='headings')
+                for i, col in enumerate(["KNr", "Fornavn", "Etternavn", "Adresse", "Ordre Nummer", "Antall", "Sum", "Betegnelse"], 1):
+                    tree_popup.column(f"#{i}", anchor=tk.CENTER, width=150)
+                    tree_popup.heading(f"#{i}", text=col)
                 tree_popup.pack(fill=tk.BOTH, expand=True)
 
                 fetch_ordre_detaljer(selected_ordre.get(), tree_popup)
 
-
     tabControl = ttk.Notebook(root)
 
-    #Stilcbibliotek
     style = ttk.Style()
     style.theme_use('default')
-    #Stil for bakgrunn på tab bar
     style.configure('TNotebook', background=tab_background_clr)
-    #stil for farger på tabs basert på om de er aktive, inaktive eller musepekeren er over fanen.
     style.configure('TNotebook.Tab', background=button_clr)
     style.map('TNotebook.Tab', background=[('selected', button_hover_clr), ('active', button_select_clr)])
-
-    #Stil for alle knapper i applikasjonen
     style.configure('TButton', background=button_clr)
     style.map('TButton', background=[('active', button_hover_clr), ('active', button_select_clr)])
 
-    #setter farger på alle tabs
     tab1 = tk.Frame(tabControl, background=background_clr)
     tab2 = tk.Frame(tabControl, background=background_clr)
     tab3 = tk.Frame(tabControl, background=background_clr)
 
-
     tabControl.bind("<<NotebookTabChanged>>", on_tab_select)
 
-
-    tabControl.add(tab1, text="Kunde",)
+    tabControl.add(tab1, text="Kunde")
     tabControl.add(tab2, text="Ordre")
     tabControl.add(tab3, text="Varehus")
-
     tabControl.pack(expand=1, fill="both")
 
     tree1 = ttk.Treeview(tab1, column=("c1", "c2", "c3", "c4", "c5"), show='headings')
-    tree1.column("#1", anchor=tk.CENTER)
-    tree1.heading("#1", text="Kundenr")
-    tree1.column("#2", anchor=tk.CENTER)
-    tree1.heading("#2", text="Fornavn")
-    tree1.column("#3", anchor=tk.CENTER)
-    tree1.heading("#3", text="Etternavn")
-    tree1.column("#4", anchor=tk.CENTER)
-    tree1.heading("#4", text="Adressse")
-    tree1.column("#5", anchor=tk.CENTER)
-    tree1.heading("#5", text="Postnr")
+    for i, col in enumerate(["Kundenr", "Fornavn", "Etternavn", "Adresse", "Postnr"], 1):
+        tree1.column(f"#{i}", anchor=tk.CENTER)
+        tree1.heading(f"#{i}", text=col)
     tree1.bind("<ButtonRelease-1>", on_treeview_click)
     tree1.pack()
 
     tree2 = ttk.Treeview(tab2, column=("c1", "c2", "c3", "c4", "c5"), show='headings')
-    tree2.column("#1", anchor=tk.CENTER)
-    tree2.heading("#1", text="OrdreNr")
-    tree2.column("#2", anchor=tk.CENTER)
-    tree2.heading("#2", text="OrdreDato")
-    tree2.column("#3", anchor=tk.CENTER)
-    tree2.heading("#3", text="SendtDato")
-    tree2.column("#4", anchor=tk.CENTER)
-    tree2.heading("#4", text="BetaltDato")
-    tree2.column("#5", anchor=tk.CENTER)
-    tree2.heading("#5", text="KundeNr")
+    for i, col in enumerate(["OrdreNr", "OrdreDato", "SendtDato", "BetaltDato", "KundeNr"], 1):
+        tree2.column(f"#{i}", anchor=tk.CENTER)
+        tree2.heading(f"#{i}", text=col)
     tree2.bind("<Double-1>", lambda event: open_popup(event, hent_valgt_ordre_cmd))
     tree2.pack()
 
     tree3 = ttk.Treeview(tab3, column=("c1", "c2", "c3", "c4", "c5", "c6"), show='headings')
-    tree3.column("#1", anchor=tk.CENTER)
-    tree3.heading("#1", text="VareNr")
-    tree3.column("#2", anchor=tk.CENTER)
-    tree3.heading("#2", text="Betegnelse")
-    tree3.column("#3", anchor=tk.CENTER)
-    tree3.heading("#3", text="Pris")
-    tree3.column("#4", anchor=tk.CENTER)
-    tree3.heading("#4", text="Katogori nr")
-    tree3.column("#5", anchor=tk.CENTER)
-    tree3.heading("#5", text="Antall")
-    tree3.column("#6", anchor=tk.CENTER)
-    tree3.heading("#6", text="Hylle")
+    for i, col in enumerate(["VareNr", "Betegnelse", "Pris", "Katogori nr", "Antall", "Hylle"], 1):
+        tree3.column(f"#{i}", anchor=tk.CENTER)
+        tree3.heading(f"#{i}", text=col)
     tree3.pack()
 
     entry_frame = tk.Frame(tab1)
     entry_frame.pack(pady=10)
 
+    #Inndatafelter for opprett kunde funkesjoner.
     fornavn_entry = tk.Entry(entry_frame)
     fornavn_entry.grid(row=0, column=0, padx=5)
     fornavn_entry.bind("<Button-1>", lambda e: fornavn_entry.delete(0, tk.END))
@@ -174,18 +120,15 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     adresse_entry.bind("<Button-1>", lambda e: adresse_entry.delete(0, tk.END))
     adresse_entry.insert(0, "Adresse")
 
-    #AutoComplete godtar ikke postkoder_cmd direkte, så må kjøres som en liste.
     post_nr = postkoder_cmd()
     postnr_combo = AutocompleteCombobox(entry_frame, completevalues=post_nr, state="readonly")
     postnr_combo.grid(row=0, column=3, padx=5)
     postnr_combo.bind("<Button-1>", lambda e: postnr_combo.delete(0, tk.END))
     postnr_combo.insert(0, "Postnr")
 
-    #knapper i ordretab
     button1 = ttk.Button(tab2, text="Oppdater Ordreliste", command=hent_ordreliste_cmd)
     button1.pack(pady=10)
 
-    # knapper i kundetab
     button2 = ttk.Button(tab1, text="Oppdater Kundeliste", command=hent_kundeliste_cmd)
     button2.pack(pady=10)
     button3 = ttk.Button(tab1, text="Opprett Kunde", command=opprett_kunde_cmd)
@@ -193,7 +136,6 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
     button4 = ttk.Button(tab1, text="Slett Kunde", command=slett_kunde_cmd)
     button4.pack(pady=10)
 
-    #Knapper i Varehus tab
     button5 = ttk.Button(tab3, text="Oppdater Varehus", command=varehus_cmd)
     button5.pack(pady=10)
 
