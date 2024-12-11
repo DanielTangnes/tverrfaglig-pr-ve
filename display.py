@@ -61,7 +61,7 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
                 top.title("Ordre Detaljer for ordre {}".format(selected_ordre.get()))
 
                 # Oppretter kolonner i popup vindu
-                tree_popup = ttk.Treeview(top, columns=("col1", "col2", "col3", "col4","col5","col6","col7", "col8"), show='headings')
+                tree_popup = ttk.Treeview(top, columns=("col1", "col2", "col3", "col4","col5","col6","col7", "col8", "col9"), show='headings')
                 tree_popup.column("#1", anchor=tk.CENTER, width=100)
                 tree_popup.heading("#1", text="KNr")
                 tree_popup.column("#2", anchor=tk.CENTER, width=150)
@@ -73,11 +73,13 @@ def gui(hent_ordreliste_cmd=None, hent_kundeliste_cmd=None, opprett_kunde_cmd=No
                 tree_popup.column("#5", anchor=tk.CENTER, width=150)
                 tree_popup.heading("#5", text="Ordre Nummer")
                 tree_popup.column("#6", anchor=tk.CENTER, width=150)
-                tree_popup.heading("#6", text="Antall")
+                tree_popup.heading("#6", text="Pris")
                 tree_popup.column("#7", anchor=tk.CENTER, width=150)
-                tree_popup.heading("#7", text="Sum")
-                tree_popup.column("#8", anchor=tk.CENTER, width=155)
-                tree_popup.heading("#8", text="Betegnelse")
+                tree_popup.heading("#7", text="Antall")
+                tree_popup.column("#8", anchor=tk.CENTER, width=150)
+                tree_popup.heading("#8", text="Sum")
+                tree_popup.column("#9", anchor=tk.CENTER, width=155)
+                tree_popup.heading("#9", text="Betegnelse")
                 tree_popup.pack(fill=tk.BOTH, expand=True)
 
                 fetch_ordre_detaljer(selected_ordre.get(), tree_popup)
